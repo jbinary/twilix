@@ -1,8 +1,7 @@
 """
-Module implements http://jabber.org/protocol/si/profile/file-transfer feature
-(XEP-0096), based on stream initiation feature (XEP-0095).
+Module implements stream initiation feature (XEP-0095).
 
-You can use this to send and receive files.
+It's can be used to initiate a stream to another entity.
 """
 
 import uuid
@@ -23,11 +22,10 @@ class ConnectionAborted(Exception):
 
 class FeatureForm(Form):
     """
-    Extends Form class.
-    Use this to assemble x stanza with the type of 'form' contains
-    field with all needed stream methods.
+    Data form that's used to negotiate a suitable stream method.
 
-    :param methods: All needed stream methods you want to add.
+    :param methods: allowed stream methods (form will fail to validate if
+    a remote entity will submit someone that's not in this list).
 
     """
     def __init__(self, methods=(), *args, **kwargs):
@@ -38,11 +36,6 @@ class FeatureForm(Form):
         super(FeatureForm, self).__init__(*args, **kwargs)
 
 class Feature(VElement):
-    """
-    Extends VElement class.
-    The base class for feature stanzas with the child,
-    which is FeatureForm class.
-    """
     elementName = 'feature'
     elementUri = 'http://jabber.org/protocol/feature-neg'
 
@@ -50,7 +43,6 @@ class Feature(VElement):
 
 class SIElement(Query):
     """
-    Extends Query class.
     The base class for si queries.
     """
     elementName = 'si'
@@ -102,13 +94,16 @@ class SIRequest(SIElement):
    
 class SIProfile(object):
     """
-    Defines profile for si protocol.
+    Base class for SI profiles.
     """
     handlerClass = SIRequest
     def __init__(self, si):
         self.si = si
 
 class Streams(UserDict):
+    """
+    Simple streams pool.
+    """
     def __init__(self):
         UserDict.__init__(self)
         self._keys = []
@@ -126,11 +121,11 @@ class Streams(UserDict):
 
 class SI(object):
     """
-    The main class for si-based file transfer.
+    The stream initiation service.
 
     :param dispatcher: Dispatcher instance to be used with the service.
 
-    :param streams: Streams to be used in file transfer.
+    :param streams: Streams that can be used to initiate.
     """
     def __init__(self, dispatcher, streams):
         self.dispatcher = dispatcher
@@ -140,11 +135,12 @@ class SI(object):
 
     def init(self, disco=None, iq_validator=None):
         """
-        Adds the feature in disco.
+        Initialize the service: add disco feature and register necessary
+        handlers.
 
-        :param disco: Client's disco instance.
+        :param disco: disco instance.
 
-        :param iq_validator: Validator for proper parsing.
+        :param iq_validator: additional validator for iq.
         """
         self.iq_validator = iq_validator
         if disco is not None:
@@ -153,7 +149,7 @@ class SI(object):
 
     def register_profile(self, profile, *args, **kwargs):
         """
-        Registers profile and it's handler and adds feature in disco.
+        Registers SI profile to be used with the service.
 
         :param profile: Profile to be registrated.
         """
@@ -170,9 +166,9 @@ class SI(object):
     @defer.inlineCallbacks
     def initiate(self, request, to, from_=None):
         """
-        Initiates file transfer.
+        Initiates a stream to a remote entity.
 
-        :param request: Request to sent.
+        :param request: Request to send.
 
         :param to: Destination JID.
 
@@ -202,15 +198,15 @@ class SI(object):
 
     def receive(self, method, sid, initiator, meta, timeout=60):
         """
-        Receives data.
+        Start to receive data from the stream.
 
         :param method: Defines stream to be used.
 
         :param sid: Transfer's id.
 
-        :param initiator: ???
+        :param initiator: initiator JID.
 
-        :param meta: ???
+        :param meta: connection metadata.
 
         :param timeout: Time in seconds.
         """
