@@ -87,17 +87,13 @@ class ClientVersion(object):
         self.client_version = client_version
         self.client_os = client_os
 
-    def init(self, disco=None, handlers=None):
+    def init(self, disco=None):
         """Registers handlers and adds version feature in disco.
         Needs to be called if you want to represent your version to others.
         
         :param handlers: extra handlers to handle versions for JIDs that
         are different from myjid."""
         self.dispatcher.registerHandler((self.VersionHandler, self))
-        if handlers is None:
-            handlers = ()
-        for handler, host in handlers:
-            self.dispatcher.registerHandler((handler, host))
 
         if disco is not None:
             disco.root_info.addFeatures(Feature(var='jabber:iq:version'))
