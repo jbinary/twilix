@@ -67,6 +67,9 @@ class Feature(VElement):
 
     var = fields.StringAttr('var')
 
+    def __unicode__(self):
+        return self.var
+
 class DiscoInfoQuery(Query):
     """
     Extends Query class.

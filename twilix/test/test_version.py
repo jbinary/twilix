@@ -5,6 +5,7 @@ from twisted.words.protocols.jabber.jid import JID
 from twilix.version import MyVersionQuery, ClientVersion
 from twilix import errors
 from twilix.stanzas import Iq
+from twilix.disco import Disco
 
 from twilix.test import hostEmul, dispatcherEmul
 
@@ -35,10 +36,12 @@ class TestClientVersion(unittest.TestCase):
         self.CV = ClientVersion(dispatcher=dispatcherEmul('jid'))
         
     def test_init(self):
-        hand=[(dispatcherEmul('jid'), '2'),]
-        self.CV.init(handlers=hand)
-        hand.insert(0, (MyVersionQuery, self.CV))
-        self.assertEqual(self.CV.dispatcher._handlers, hand)
+        disco = Disco(self.CV.dispatcher)
+        self.CV.init(disco=disco)
+        self.assertEqual(self.CV.dispatcher._handlers[0],
+                         (MyVersionQuery, self.CV))
+        self.assertTrue('jabber:iq:version' in \
+                        map(unicode, disco.root_info.features))
     
     def test_getVersion(self):
         to = 'to'
