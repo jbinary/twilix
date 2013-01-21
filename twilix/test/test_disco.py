@@ -59,14 +59,12 @@ class TestDisco(unittest.TestCase):
         self.to = 'somejid'
     
     def test_init(self):
-        hand=[(dispatcherEmul('jid'), '2'),]
-        self.disco.init(handlers=hand)
+        self.disco.init()
         test_list=[(disco.VDiscoInfoQuery, self.disco), 
                    (disco.VDiscoItemsQuery, self.disco),
                    (disco.NotFoundDiscoInfoQuery, self.disco), 
                    (disco.NotFoundDiscoItemsQuery, self.disco)]
-        test_list.insert(2, hand[0])
-        self.assertEqual(self.disco.dispatcher._handlers, test_list)        
+        self.assertEqual(self.disco.dispatcher._handlers, test_list)
     
     def test_getItems(self):
         result = self.disco.getItems(self.to)

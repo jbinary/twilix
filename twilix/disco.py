@@ -200,6 +200,9 @@ class Disco(object):
 
        :param dispatcher: dispatcher instance to use with the service."""
 
+    DiscoInfoHandler = VDiscoInfoQuery
+    DiscoItemsHandler = VDiscoItemsQuery
+
     def __init__(self, dispatcher):
         """
         Initialize class. 
@@ -213,7 +216,7 @@ class Disco(object):
         self.root_info = self.static_info['']
         self.root_items = self.static_items['']
 
-    def init(self, handlers=None):
+    def init(self):
         """
         Initialize the service (Register all necessary handlers and add service
         discovery features as own. When called, the entity will be able to
@@ -221,12 +224,8 @@ class Disco(object):
 
         :param handlers: any extra disco handlers to handle dynamic disco nodes
         """
-        if handlers is None:
-            handlers = ()
-        self.dispatcher.registerHandler((VDiscoInfoQuery, self))
-        self.dispatcher.registerHandler((VDiscoItemsQuery, self))
-        for handler, host in handlers:
-            self.dispatcher.registerHandler((handler, host))
+        self.dispatcher.registerHandler((self.DiscoInfoHandler, self))
+        self.dispatcher.registerHandler((self.DiscoItemsHandler, self))
         self.dispatcher.registerHandler((NotFoundDiscoInfoQuery, self))
         self.dispatcher.registerHandler((NotFoundDiscoItemsQuery, self))
 
