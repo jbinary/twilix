@@ -36,6 +36,7 @@ class MyVersionQuery(VersionQuery):
     Define set/get handlers for version queries.
     """
     parentClass = MyIq
+    resultClass = 'self'
 
     def getHandler(self):
         """
@@ -75,6 +76,8 @@ class ClientVersion(object):
 
     :param client_os: client OS to be represented as yours.
     """
+    VersionHandler = MyVersionQuery
+    VersionRequestQuery = VersionQuery
     
     def __init__(self, dispatcher, client_name=None, client_version=None,
                  client_os=None):
@@ -90,7 +93,7 @@ class ClientVersion(object):
         
         :param handlers: extra handlers to handle versions for JIDs that
         are different from myjid."""
-        self.dispatcher.registerHandler((MyVersionQuery, self))
+        self.dispatcher.registerHandler((self.VersionHandler, self))
         if handlers is None:
             handlers = ()
         for handler, host in handlers:
@@ -114,8 +117,8 @@ class ClientVersion(object):
         """
         if from_ is None:
             from_ = self.dispatcher.myjid
-        query = VersionQuery(host=self,
-                             parent=Iq(type_='get', to=jid, from_=from_))
-        query.iq.result_class = VersionQuery
+        query = self.VersionRequestQuery(host=self,
+                                         parent=Iq(type_='get', to=jid,
+                                                   from_=from_))
         self.dispatcher.send(query.iq)
         return query.iq.deferred
