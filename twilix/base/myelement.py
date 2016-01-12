@@ -84,13 +84,14 @@ class MyElement(Element):
         parentClass = getattr(cls, 'parentClass', None)
         if parentClass:
             p = parentClass.createFromElement(el, **kwargs)
-            to_check = p.firstChildElement()
             r = EmptyElement()
-            if to_check:
+            for to_check in p.children:
                 try:
                     r = cls._createFromElement(to_check, **kwargs)
                 except WrongElement:
                     pass
+                else:
+                    break
             if not r and getattr(cls, 'isRequired', True):
                 raise WrongElement
             p.link(r)
