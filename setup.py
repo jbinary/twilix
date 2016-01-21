@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='TwiLiX',
-    version='0.1.2',
+    version='0.1.3',
     author='Sergey Dobrov',
     author_email='binary@jrudevels.org',
     packages=[
