@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='TwiLiX',
@@ -23,6 +23,6 @@ setup(
     license='LICENSE.txt',
     description='ORM based XMPP library for Twisted',
     install_requires=[
-        "Twisted >= 13.2.0",
+        "Twisted>=13.2.0",
     ],
 )
