@@ -34,6 +34,10 @@ class TwilixComponent(BasePattern, component.Service):
 
         self.xmlstream.rawDataInFn = self.rawIn
         self.xmlstream.rawDataOutFn = self.rawOut
+        self.startSendingKeepalives()
+
+    def componentDisconnected(self):
+        self.stopSendingKeepalives()
 
     def init(self):
         """ To be overriden in derived classes. Used to initialize all needed
