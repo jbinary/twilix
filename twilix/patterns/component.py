@@ -1,16 +1,12 @@
 from twisted.words.protocols.jabber import component
 
+from twilix.patterns import BasePattern
 from twilix.dispatcher import Dispatcher
-from twilix.jid import internJID
 
-class TwilixComponent(component.Service):
+class TwilixComponent(BasePattern, component.Service):
     """ Class to build XMPP components based on twilix. (see XEP-0114)
 
-    Look at the connect method to connect your component to an XMPP-server.
-        
-    :param myjid: The jid of the component."""
-    def __init__(self, myjid):
-        self.myjid = internJID(myjid)
+    Look at the connect method to connect your component to an XMPP-server."""
 
     def connect(self, port, secret, host=None):
         """ Connect component to an XMPP-server to make it works.
