@@ -4,8 +4,11 @@ from twilix.jid import internJID
 
 class BasePattern(object):
     def __init__(self, myjid, keepalive_period=None):
-        """ :param myjid: The jid of the component.
-            :param keepalive_period: The number of seconds between sending of keepalives."""
+        """
+        :param myjid: The jid of the component.
+        :param keepalive_period: The number of seconds between sending
+        of keepalives.
+        """
         self.myjid = internJID(myjid)
         self.keepalive_period = keepalive_period
         self.keepalive_send_task = task.LoopingCall(self.send_keepalive)
