@@ -6,5 +6,8 @@ to build and parse XML stanzas.
 
 Changelog
 ----------
+0.1.4 — make it possible to send keepalive packets to the stream to make sure
+the connection is not being interrupted by any kind of timeout
+
 0.1.3 — stanzas with parentClass are now looked in all the possible children
 elements of the parent element
