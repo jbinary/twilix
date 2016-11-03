@@ -4,7 +4,8 @@ from twilix.jid import internJID
 
 class BasePattern(object):
     def __init__(self, myjid, keepalive_period=None):
-        """ :param myjid: The jid of the component."""
+        """ :param myjid: The jid of the component.
+            :param keepalive_period: The number of seconds between sending of keepalives."""
 
         self.myjid = internJID(myjid)
         if keepalive_period is not None:
