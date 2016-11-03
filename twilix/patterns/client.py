@@ -4,6 +4,7 @@ from twisted.names.srvconnect import SRVConnector
 from twisted.words.protocols.jabber.xmlstream import XmlStreamFactory
 from twisted.words.protocols.jabber import xmlstream
 
+from twilix.patterns import BasePattern
 from twilix.dispatcher import Dispatcher
 from twilix.jid import internJID
 
@@ -26,10 +27,7 @@ class XMPPClientConnector(SRVConnector):
     def __init__(self, reactor, domain, factory):
         SRVConnector.__init__(self, reactor, 'xmpp-client', domain, factory)
 
-class TwilixClient(object):
-    def __init__(self, myjid):
-        self.myjid = internJID(myjid)
-
+class TwilixClient(BasePattern):
     def generic_connect(self, factory, connector):
         self.f = factory
         self.f.bootstraps = (
@@ -59,6 +57,7 @@ class TwilixClient(object):
 
     def onConnected(self, xs):
         self.xmlstream = xs
+        self.startSendingKeepalives()
 
     def onAuthenticated(self, xs):
         self.myjid = internJID(unicode(xs.authenticator.jid))
@@ -68,7 +67,7 @@ class TwilixClient(object):
         self.deferred = None
 
     def onDisconnected(self, failure):
-        pass
+        self.stopSendingKeepalives()
 
     def init(self):
         """ Must be redefined in derived classes. Used to initialize all
