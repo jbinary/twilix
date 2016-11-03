@@ -57,6 +57,7 @@ class TwilixClient(BasePattern):
 
     def onConnected(self, xs):
         self.xmlstream = xs
+        self.startSendingKeepalives()
 
     def onAuthenticated(self, xs):
         self.myjid = internJID(unicode(xs.authenticator.jid))
@@ -66,7 +67,7 @@ class TwilixClient(BasePattern):
         self.deferred = None
 
     def onDisconnected(self, failure):
-        pass
+        self.stopSendingKeepalives()
 
     def init(self):
         """ Must be redefined in derived classes. Used to initialize all
