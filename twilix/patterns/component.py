@@ -8,6 +8,8 @@ class TwilixComponent(BasePattern, component.Service):
 
     Look at the connect method to connect your component to an XMPP-server."""
 
+    DispatcherClass = Dispatcher
+
     def connect(self, port, secret, host=None):
         """ Connect component to an XMPP-server to make it works.
 
@@ -29,7 +31,7 @@ class TwilixComponent(BasePattern, component.Service):
 
     def componentConnected(self, xs):
         self.xmlstream = xs
-        self.dispatcher = Dispatcher(xs, self.myjid)
+        self.dispatcher = self.DispatcherClass(xs, self.myjid)
         self.init()
 
         self.xmlstream.rawDataInFn = self.rawIn
