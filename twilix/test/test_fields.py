@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+from builtins import str
+from builtins import object
 import unittest
 
 from twilix.fields import AttributeProp, StringType, StringAttr, \
@@ -24,8 +27,8 @@ class TestAttributeProp(unittest.TestCase):
         self.assertEqual(None, res2)
     
     def test_unicode(self):
-        self.assertEqual(u'AttributeProp jack', unicode(self.ap1))
-        self.assertEqual(u'AttributeProp john', unicode(self.ap2))
+        self.assertEqual(u'AttributeProp jack', str(self.ap1))
+        self.assertEqual(u'AttributeProp john', str(self.ap2))
 
 
 class TestStringType(unittest.TestCase):
@@ -37,16 +40,16 @@ class TestStringType(unittest.TestCase):
         self.stype_not_req.required = False
         
     def test_clear(self):
-        str = 'hello'
-        self.assertEqual(self.stype_req.clean(str), unicode(str))
+        s = 'hello'
+        self.assertEqual(self.stype_req.clean(s), str(s))
         self.assertEqual(self.stype_not_req.clean(None), None)
         self.assertRaises(ElementParseError, self.stype_req.clean, None)
 
 class TestStringAttr(unittest.TestCase):
     
     def test_clean_set(self):
-        str = 'hello'
-        self.assertEqual(StringAttr('any').clean_set(str), unicode(str))
+        s = 'hello'
+        self.assertEqual(StringAttr('any').clean_set(s), str(s))
         self.assertEqual(StringAttr('any').clean_set(None), None)
      
         

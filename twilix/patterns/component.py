@@ -1,3 +1,6 @@
+from __future__ import print_function
+from __future__ import unicode_literals
+from builtins import str
 from twisted.words.protocols.jabber import component
 
 from twilix.patterns import BasePattern
@@ -22,9 +25,9 @@ class TwilixComponent(BasePattern, component.Service):
         if host to connect is differ from jid."""
 
         if host is None:
-            host = unicode(self.myjid)
-        f = component.componentFactory(unicode(self.myjid), secret)
-        connector = component.buildServiceManager(unicode(self.myjid), secret,
+            host = str(self.myjid)
+        f = component.componentFactory(str(self.myjid), secret)
+        connector = component.buildServiceManager(str(self.myjid), secret,
                                          "tcp:%s:%s" % (host, port))
         self.setServiceParent(connector)
         connector.startService()
@@ -46,7 +49,7 @@ class TwilixComponent(BasePattern, component.Service):
         services """
 
     def rawIn(self, data):
-        print "<<< %s" % data
+        print("<<< %s" % data)
 
     def rawOut(self, data):
-        print ">>> %s" % data
+        print(">>> %s" % data)

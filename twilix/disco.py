@@ -2,6 +2,9 @@
 
 You can use it to get disco items or info from another jabber entities and to
 represent your own items and feature to others."""
+from __future__ import unicode_literals
+from builtins import object
+from future.utils import python_2_unicode_compatible
 import hashlib
 import base64
 
@@ -53,6 +56,8 @@ class Identity(VElement):
     type_ = fields.StringAttr('type')
     iname = fields.StringAttr('name', required=False)
 
+
+@python_2_unicode_compatible
 class Feature(VElement):
     """
     Extends VElement. 
@@ -67,7 +72,7 @@ class Feature(VElement):
 
     var = fields.StringAttr('var')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.var
 
 class DiscoInfoQuery(Query):
@@ -96,7 +101,7 @@ class VDiscoInfoQuery(DiscoInfoQuery):
         """
         node = self.node or ''
         info_query = None
-        if self.host.static_info.has_key(node):
+        if node in self.host.static_info:
             info_query = self.host.static_info[node]
             info_query.node = self.node
         if info_query is None:
@@ -154,7 +159,7 @@ class VDiscoItemsQuery(DiscoItemsQuery):
         """
         node = self.node or ''
         items_query = None
-        if self.host.static_info.has_key(node):
+        if node in self.host.static_info:
             items_query = self.host.static_items[node]
             items_query.node = self.node
         if items_query is None:

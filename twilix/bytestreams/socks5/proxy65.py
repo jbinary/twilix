@@ -25,13 +25,14 @@ THE SOFTWARE.
 
 $Id: proxy65.py 34 2008-12-14 12:48:21Z fabio.forno@gmail.com $
 """
+from __future__ import absolute_import
 
 from twisted.internet import protocol, reactor
 from twisted.python import usage, log
 from twisted.words.protocols.jabber import component,jid
 from twisted.application import app, service, internet
 import sys, socket
-import socks5
+from . import socks5
 
 class XEP65Proxy(socks5.SOCKSv5):
     def __init__(self, host):
@@ -67,7 +68,7 @@ class XEP65Proxy(socks5.SOCKSv5):
         
         # Check to see if the requested address is already
         # activated -- send an error if so
-        if not self.host.connections.has_key(addr) or \
+        if addr not in self.host.connections or \
            self.host.connections[addr]['connection']:
             self.sendErrorReply(socks5.REPLY_CONN_NOT_ALLOWED)
             self.stopProducing()

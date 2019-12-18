@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from twilix.base import VElement
 from twilix.stanzas import Message
 

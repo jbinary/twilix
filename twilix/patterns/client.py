@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+from builtins import str
+from builtins import object
 import twisted.words.protocols.jabber.client as twisted_client
 from twisted.internet import defer, reactor
 from twisted.names.srvconnect import SRVConnector
@@ -60,7 +63,7 @@ class TwilixClient(BasePattern):
         self.startSendingKeepalives()
 
     def onAuthenticated(self, xs):
-        self.myjid = internJID(unicode(xs.authenticator.jid))
+        self.myjid = internJID(str(xs.authenticator.jid))
         self.dispatcher = Dispatcher(xs, self.myjid)
         self.init()
         self.deferred.callback(self)

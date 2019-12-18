@@ -1,9 +1,14 @@
 """Module extends the JID class from twisted library."""
+from __future__ import unicode_literals
 
+from builtins import map
+from future.utils import python_2_unicode_compatible
 import copy
 
-from twisted.words.protocols.jabber.jid import JID, InvalidFormat
+from twisted.words.protocols.jabber.jid import JID
 
+
+@python_2_unicode_compatible
 class MyJID(JID):
     """Extends class JID from twisted.words.protocols.jabber.jid."""
     @property
@@ -17,7 +22,7 @@ class MyJID(JID):
         new.resource = None
         return new
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Override unicode converter.
         Return JID in user@server/resourse form.
@@ -46,10 +51,10 @@ class MyJID(JID):
     def _escapedTransform(cls, string):
         buf = ''
         for ch in string:
-            if ch in cls.__escapedMap.keys():
+            if ch in list(cls.__escapedMap.keys()):
                 buf += cls.__escapedMap[ch]
             elif ch == '\\':
-                l = cls.__escapedMap.values()
+                l = list(cls.__escapedMap.values())
                 l.append(u'\\5c')
                 for elem in l:
                     place = string[string.find(ch):].find(elem)
@@ -65,16 +70,16 @@ class MyJID(JID):
     @classmethod
     def _unescapedTransform(cls, string):
         unescapedMap = dict(map(None,
-                                  cls.__escapedMap.values(),
-                                  cls.__escapedMap.keys()
+                                  list(cls.__escapedMap.values()),
+                                  list(cls.__escapedMap.keys())
                                   ))
-        for k in unescapedMap.keys():
+        for k in list(unescapedMap.keys()):
             while True:
                 place = string.find(k)
                 if place == -1:
                     break
                 string = string[:place] + unescapedMap[k]+string[place+3:]
-        slashList = [u'\\5c%s' % x[1:] for x in unescapedMap.keys()]
+        slashList = [u'\\5c%s' % x[1:] for x in list(unescapedMap.keys())]
         slashList.append(u'\\5c5c')
         for elem in slashList:
             while True:

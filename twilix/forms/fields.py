@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+from builtins import object
+from future.utils import raise_
 from twilix.base.velement import VElement
 from twilix.errors import NotAcceptableException
 from twilix.base.exceptions import ElementParseError
@@ -42,8 +45,8 @@ class Field(VElement):
 
     def fclean(self, values):
         if self.kwargs.get('required') and not values:
-            raise ElementParseError, "Form field %s %s is required" % \
-                    (self.var, self.type_)
+            raise_(ElementParseError, "Form field %s %s is required" % \
+                    (self.var, self.type_))
         return values
 
     def _get_value(self):

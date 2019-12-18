@@ -1,7 +1,9 @@
 """Module provides In-Band Registration mechanism. (XEP-0077)
 
 Can be used to provide registration ability to your XMPP-enabled service."""
+from __future__ import unicode_literals
 
+from builtins import object
 from twilix.stanzas import Query, MyIq
 from twilix.disco import Feature
 from twilix import fields

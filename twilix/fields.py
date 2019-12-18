@@ -15,6 +15,12 @@ received from a real XML and the second one for situations when data is set
 with Python and needs to be converted to an XML compatible thing. Clean
 methods must raise ElementParseError if element has no suitable value.
 """
+from __future__ import division
+from __future__ import unicode_literals
+from builtins import str
+from past.utils import old_div
+from builtins import object
+from future.utils import raise_, python_2_unicode_compatible
 import base64
 
 from twilix.jid import internJID
@@ -22,6 +28,8 @@ from twilix.base.exceptions import ElementParseError
 from twilix.base.myelement import MyElement, EmptyElement
 from twilix.utils import parse_timestamp
 
+
+@python_2_unicode_compatible
 class AttributeProp(object):
     """Base class for all attribute properties."""
     def __init__(self, xmlattr, required=True, default=None):
@@ -41,23 +49,23 @@ class AttributeProp(object):
         """
         return el.attributes.get(self.xmlattr, None)
 
-    def __unicode__(self):
+    def __str__(self):
         """Overrides __unicode__ method of object."""
         return u'AttributeProp %s' % self.xmlattr
 
 class StringType(object):
     def to_python(self, value):
         if value is not None:
-            return unicode(value)
+            return str(value)
 
     def clean(self, value):
         if not value and self.required:
-            raise ElementParseError, u'%s is required' % self
+            raise_(ElementParseError, u'%s is required' % self)
         return value
 
     def clean_set(self, value):
         if value is not None:
-            return unicode(value)
+            return str(value)
 
 class IntegerType(StringType):
     """Used for nodes contain integer number."""
@@ -113,11 +121,11 @@ class DateTimeType(StringType):
         res = value.strftime("%Y-%m-%dT%H:%M:%S")
         minutes = 0
         if value.utcoffset():
-            minutes = value.utcoffset().seconds / 60
+            minutes = old_div(value.utcoffset().seconds, 60)
         if minutes == 0:
             res += 'Z'
         else:
-            hours = minutes / 60
+            hours = old_div(minutes, 60)
             minutes = minutes - hours * 60
             if hours > 0: res += "+"
             res += "%s:%s" % (hours, minutes)
@@ -195,12 +203,11 @@ class NodeProp(object):
         :raises:
             ElementParseError       
         """
-        r = filter(lambda el: not isinstance(el, (str, unicode)) and \
+        r = [el for el in el.children if not isinstance(el, str) and \
                               (getattr(el, 'name', None) == self.xmlnode or \
-                               self.xmlnode is None),
-                   el.children)
+                               self.xmlnode is None)]
         if not self.listed and len(r) > 1:
-            raise ElementParseError, 'node %s is not list' % self.xmlnode
+            raise_(ElementParseError, 'node %s is not list' % self.xmlnode)
         if self.listed:
             return tuple(r)
         if r:
@@ -244,7 +251,7 @@ class StringNode(StringType, NodeProp):
             return EmptyElement()
         value = super(StringNode, self).clean_set(value)
         r = MyElement((self.uri, self.xmlnode))
-        r.content = unicode(value)
+        r.content = str(value)
         return r
 
 class DateTimeNode(DateTimeType, StringNode):
@@ -320,7 +327,7 @@ class Base64Node(StringNode):
 class ElementNode(NodeProp):
     """Used for nodes contain another element."""
     def __init__(self, *args, **kwargs):
-        if isinstance(args[0], (str, unicode)):     
+        if isinstance(args[0], str):     
             args = args[1:]
         cls = args[0]
         if len(args) > 1:
@@ -340,12 +347,10 @@ class ElementNode(NodeProp):
             element otherwise.
             
         """
-        r = filter(lambda c_el: \
-                    (self.cls.elementName is None or \
+        r = [c_el for c_el in el.children if (self.cls.elementName is None or \
                      getattr(c_el, 'name', None) == self.cls.elementName) and \
                     (self.cls.elementUri is None or \
-                     getattr(c_el, 'uri', None) == self.cls.elementUri),
-                   el.children)
+                     getattr(c_el, 'uri', None) == self.cls.elementUri)]
         # XXX: Too strictly... :(
         #if not self.listed and len(r) > 1:
         #    raise ElementParseError, 'node %s is not list' % \

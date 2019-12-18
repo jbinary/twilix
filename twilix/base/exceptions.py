@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 class ElementParseError(Exception):
     """Raises when some error was aquired while stanza pasring, e.g. attribute
     or node is required but not given. An error stanza with the bad-request

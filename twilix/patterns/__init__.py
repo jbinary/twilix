@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from builtins import object
 from twisted.internet import task
 
 from twilix.jid import internJID

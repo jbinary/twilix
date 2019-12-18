@@ -1,6 +1,8 @@
 """
 Contains special functions to 
 """
+from __future__ import unicode_literals
+from builtins import str
 import datetime
 import re
 
@@ -49,7 +51,7 @@ def parse_timestamp(s):
     else:
         values["microsecond"] = values["microsecond"][1:]
         values["microsecond"] += "0" * (6 - len(values["microsecond"]))
-    values = dict((k, int(v)) for k, v in values.iteritems()
+    values = dict((k, int(v)) for k, v in list(values.items())
                   if not k.startswith("tz"))
     values['tzinfo'] = TzInfo(tz)
     try:

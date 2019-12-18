@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+from builtins import str
+from builtins import object
 import unittest
 from twisted.trial import unittest
 
@@ -66,12 +69,12 @@ class TestRosterItem(unittest.TestCase):
         self.assertEqual(self.ros.is_online(), True)
     
     def test_unicode(self):
-        self.assertEqual(unicode(self.ros), 
-                     "<RosterItem JID(u'jid') name, subscription None>")
-                         
+        self.assertEqual(str(self.ros), 
+                     "<RosterItem jid name, subscription None>")
+
     def test_repr(self):
         self.assertEqual(repr(self.ros), 
-                     "<RosterItem JID(u'jid') name, subscription None>")
+                     "<RosterItem jid name, subscription None>")
     
    
 class TestRosterQuery(unittest.TestCase):
@@ -162,7 +165,8 @@ class TestRoster(unittest.TestCase):
                  itemEmul(jid='homer@j', groups=['1', 'gs'])]
         self.rost.items = items
         res = self.rost.getGroupUsers('1')
-        self.assertEqual(res.sort(), items[1:].sort())
+        self.assertEqual(res.sort(key=lambda i: str(i.jid)),
+                         items[1:].sort(key=lambda i: str(i.jid)))
         res = self.rost.getGroupUsers('dd')
         self.assertEqual(res, items[0:1])
         res = self.rost.getGroupUsers('gs')

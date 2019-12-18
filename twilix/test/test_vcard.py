@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import unittest
 
 from twisted.words.protocols.jabber.jid import JID

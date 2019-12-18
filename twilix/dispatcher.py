@@ -8,7 +8,9 @@ to handle it with appropriate handler (based on stanza type) or send error
 back if stanza was corrupted or handler for was not found. You may also use
 an anyHandler which used for any stanza type.
 """
+from __future__ import unicode_literals
 
+from builtins import object
 from twisted.internet.defer import inlineCallbacks, returnValue
 from twilix.stanzas import Iq, Message, Presence, Stanza
 from twilix.jid import internJID
@@ -111,7 +113,7 @@ class Dispatcher(object):
             except WrongElement:
                 pass
 
-        if el.type_ in ('result', 'error') and self._callbacks.has_key(el.id):
+        if el.type_ in ('result', 'error') and el.id in self._callbacks:
             # XXX: check sender here
             id = el.id
             deferred, result_class, error_class = self._callbacks[id]
@@ -119,7 +121,7 @@ class Dispatcher(object):
                 try:
                     el = result_class.createFromElement(el, host=None)
                 # XXX: catch any exception here
-                except (WrongElement, ElementParseError), e:
+                except (WrongElement, ElementParseError) as e:
                     deferred.errback(e)
                 else:
                     deferred.callback(el)
@@ -130,7 +132,7 @@ class Dispatcher(object):
                 try:
                     err = error_class.createFromElement(el, host=None,
                                                         dispatcher=self)
-                except (WrongElement, ElementParseError), e:
+                except (WrongElement, ElementParseError) as e:
                     exception = e
                 if exception is None:
                     exception = errors.exception_by_condition(err.error.condition)
@@ -146,7 +148,7 @@ class Dispatcher(object):
                     d.topElement().validate()
                 except WrongElement:
                     continue
-                except ElementParseError, e:
+                except ElementParseError as e:
                     bad_request = True
                     # TODO: pass an exception message?
                     continue
@@ -155,7 +157,7 @@ class Dispatcher(object):
                 if func is not None:
                     try:
                         result = yield func()
-                    except Exception, e:
+                    except Exception as e:
                         if not isinstance(e, ExceptionWithContent):
                             e = InternalServerErrorException()
                             raise
@@ -168,7 +170,7 @@ class Dispatcher(object):
                         elif result is not None:
                             results.append(result)
                         if (result and handler.topClass().elementName == 'iq') \
-                          or filter(lambda x: isinstance(x, BreakStanza), results):
+                          or [x for x in results if isinstance(x, BreakStanza)]:
                             break       
             if results:
                 self.send(results)
@@ -216,7 +218,7 @@ class Dispatcher(object):
                        getattr(d, 'anyHandler', None)
                 if func is None:
                     continue
-                el = func()
+                el = func() # TODO: yield?
                 if isinstance(el, (EmptyStanza, BreakStanza)):
                     return
             if top_el.type_ in ('set', 'get') and top_el.deferred is not None:

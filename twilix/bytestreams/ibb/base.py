@@ -215,7 +215,7 @@ class IbbStream(object):
         return self.dispatcher.send(cq.iq)
 
     def unregisterSession(self, sid):
-        if self.sessions.has_key(sid):
+        if sid in self.sessions:
             s = self.sessions[sid]
             self.unregisterConnection(sid)
             return True

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import copy
 
 from twilix.base.velement import VElement
@@ -25,11 +26,9 @@ class FormField(f.NodeProp):
         return '%s %s FormField' % (self.var, self.field_type.fieldType)
 
     def get_from_el(self, el):
-        r = filter(lambda r: \
-                   not isinstance(r, (str, unicode)) and \
+        r = [r for r in el.children if not isinstance(r, str) and \
                    r.attributes.get('var', None) == self.var and \
-                   getattr(r, 'name', None) == self.xmlnode,
-                el.children)
+                   getattr(r, 'name', None) == self.xmlnode]
         if r:
             return r[0]
 
@@ -66,7 +65,7 @@ class Form(VElement):
     @property
     def fields(self):
         fields = []
-        for name, attr in self.nodesProps.items():
+        for name, attr in list(self.nodesProps.items()):
             if isinstance(attr, FormField):
                 fields.append(name)
         return fields

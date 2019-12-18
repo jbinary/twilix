@@ -5,6 +5,9 @@ There are Message, Presence, Iq classes inherit from Stanza.
 Stanzas can be used for incoming stanzas validation and parsing and to
 construct your own XML-stanza to be sent into an xmlstream.
 """
+from __future__ import unicode_literals
+from builtins import object
+from future.utils import raise_, python_2_unicode_compatible
 import uuid
 
 from twisted.internet.defer import Deferred
@@ -16,6 +19,8 @@ from twilix.errors import Error
 from twilix.htmlim import XHtmlIm
 from twilix import fields
 
+
+@python_2_unicode_compatible
 class Stanza(VElement):
     """
     Extends VElement class from twilix.base.
@@ -59,7 +64,7 @@ class Stanza(VElement):
         if 'error_class' in kwargs:
             self._error_class = kwargs['error_class']
 
-    def __unicode__(self):
+    def __str__(self):
         """Overrrides unicode converter."""
         return self.toXml()
 
@@ -136,7 +141,7 @@ class Iq(Stanza):
         
         """
         if value not in ('set', 'get', 'result', 'error'):
-            raise ElementParseError, 'Wrong Iq Type %s' % value
+            raise_(ElementParseError, 'Wrong Iq Type %s' % value)
         return value
 
     def clean_id(self, value):

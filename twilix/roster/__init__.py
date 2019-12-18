@@ -5,6 +5,10 @@ Roster handles a contact list, allows to add or remove contacts.
 Also roster handles contacts statuses and sends signals where some event
 happens.
 """
+from __future__ import unicode_literals
+from builtins import str
+from builtins import object
+from future.utils import python_2_unicode_compatible
 from pydispatch import dispatcher
 
 from twilix.stanzas import Iq, Query, Presence
@@ -12,6 +16,8 @@ from twilix.base.velement import VElement
 
 from twilix import fields, errors
 
+
+@python_2_unicode_compatible
 class RosterItem(VElement):
     """
     Class for xml roster item node. Inheritor of VElement.
@@ -46,13 +52,13 @@ class RosterItem(VElement):
     def is_online(self):
         return bool(self.presences)
 
-    def __unicode__(self):
+    def __str__(self):
         """Unicode converter."""
         return '<RosterItem %s %s, subscription %s>' % \
                (self.jid, self.nick, self.subscription)
 
     def __repr__(self):
-        return self.__unicode__()
+        return str(self)
 
 class RosterQuery(Query):
     """

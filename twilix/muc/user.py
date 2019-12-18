@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from pydispatch import dispatcher
 
 from twilix.stanzas import Presence
@@ -68,7 +69,7 @@ class UserPresence(Presence):
         if room_jid not in self.host.roster:
             return
         
-        self.host.roster[room_jid] = filter(lambda el: el.from_.resource != self.from_.resource, self.host.roster[room_jid])
+        self.host.roster[room_jid] = [el for el in self.host.roster[room_jid] if el.from_.resource != self.from_.resource]
         
         if self.type_ == 'unavailable':
             dispatcher.send(self.host.user_unavailable, user=self)

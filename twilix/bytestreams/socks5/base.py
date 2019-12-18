@@ -102,7 +102,7 @@ class InitiationQuery(stanzas.StreamHostQuery):
                 time_calls.pop(0)
             # Iterate to a next streamhost
             try:
-                iterator.next()
+                next(iterator)
             except StopIteration:
                 # We don't have to test anything now, call errorback to clean
                 _eb(None, None)
@@ -225,7 +225,7 @@ class Socks5Stream(protocol.Factory):
     def unregisterConnection(self, sid=None, addr=None):
         if sid is not None:
             addr = self.sessions.get(sid, {}).get('hash')
-        if addr is not None and self.connections.has_key(addr):
+        if addr is not None and addr in self.connections:
             sid = self.connections[addr]['sid']
             connection = self.connections[addr]['connection']
             if connection:
@@ -236,7 +236,7 @@ class Socks5Stream(protocol.Factory):
     def unregisterSession(self, sid=None, addr=None):
         if sid is None:
             sid = self.unregisterConnection(addr=addr)
-        elif self.sessions.has_key(sid):
+        elif sid in self.sessions:
             self.unregisterConnection(sid=sid)
         if sid is not None:
             del self.sessions[sid]

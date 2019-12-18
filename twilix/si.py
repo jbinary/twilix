@@ -3,7 +3,10 @@ Module implements stream initiation feature (XEP-0095).
 
 It's can be used to initiate a stream to another entity.
 """
+from __future__ import unicode_literals
 
+from builtins import str
+from builtins import object
 import uuid
 from UserDict import UserDict
 
@@ -71,7 +74,7 @@ class SIRequest(SIElement):
         streams = si.streams
         allowed = None
         for method in self.feature.methods.stream_method.options:
-            if method.value in streams.keys():
+            if method.value in list(streams.keys()):
                 allowed = method.value
                 break
         if not allowed:
@@ -174,7 +177,7 @@ class SI(object):
 
         :param from_: Source JID.
         """
-        fform = FeatureForm(methods=self.streams.keys(), type_='form')
+        fform = FeatureForm(methods=list(self.streams.keys()), type_='form')
         feature = Feature(methods=fform)
         request.feature = feature
 
@@ -182,12 +185,12 @@ class SI(object):
             from_ = self.dispatcher.myjid
 
         iq = Iq(from_=from_, to=to, type_='set')
-        request.id_ = sid = unicode(uuid.uuid4())
+        request.id_ = sid = str(uuid.uuid4())
         iq.link(request)
 
         result = yield self.dispatcher.send(iq)
         form = FeatureForm.createFromElement(result.feature.methods,
-                                             methods=self.streams.keys())
+                                             methods=list(self.streams.keys()))
         form.validate()
 
         method = form.stream_method.value
@@ -216,9 +219,9 @@ class SI(object):
         meta['timeout'] = TimeOut(timeout, stream, sid)
 
     def stream_cb(self, buf, meta):
-        count_size = meta.has_key('size')
+        count_size = 'size' in meta
         if buf is not None:
-            if meta.has_key('buf'):
+            if 'buf' in meta:
                 meta['buf'].write(buf)
             if count_size:
                 meta['timeout'].reset()
@@ -226,7 +229,7 @@ class SI(object):
                 if meta['size'] <= meta['bytes_read']:
                     meta['timeout'].cancel()
                     meta['deferred'].callback(meta)
-            if meta.has_key('receive_cb'):
+            if 'receive_cb' in meta:
                 meta['receive_cb'](buf, meta)
         elif count_size and meta['bytes_read'] != meta['size']:
             meta['deferred'].errback(ConnectionAborted)

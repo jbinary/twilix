@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from builtins import str
 import unittest
 
 from twisted.words.protocols.jabber.jid import JID
@@ -23,7 +25,7 @@ class TestStanza(unittest.TestCase):
         self.assertTrue(isinstance(res, stanzas.ErrorStanza))
     
     def test_unicode(self):
-        res = unicode(self.stanza)
+        res = str(self.stanza)
         self.assertEqual(res, u"<None to='to' from='from'/>")
         
     def test_repr(self):

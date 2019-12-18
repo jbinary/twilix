@@ -4,6 +4,8 @@ Module implements vcard-temp feature. (XEP-0054)
 Can be used to serve own vcard (for services), set own vcard (for clients) and
 view vcards of other entities.
 """
+from __future__ import unicode_literals
+from builtins import object
 import copy
 
 from twilix.stanzas import Query, Iq

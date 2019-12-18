@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from builtins import map
 import unittest
 
 from twisted.words.protocols.jabber.jid import JID
@@ -40,8 +42,8 @@ class TestClientVersion(unittest.TestCase):
         self.CV.init(disco=disco)
         self.assertEqual(self.CV.dispatcher._handlers[0],
                          (MyVersionQuery, self.CV))
-        self.assertTrue('jabber:iq:version' in \
-                        map(unicode, disco.root_info.features))
+        self.assertTrue('jabber:iq:version' in
+                        list(map(str, disco.root_info.features)))
     
     def test_getVersion(self):
         to = 'to'

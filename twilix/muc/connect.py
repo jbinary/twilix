@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from twilix.stanzas import Presence
 from twilix.base.velement import VElement
 

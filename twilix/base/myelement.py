@@ -1,3 +1,7 @@
+from __future__ import unicode_literals
+from builtins import str
+from builtins import object
+from future.utils import raise_
 from twisted.words.xish.domish import Element
 
 from twilix.base.exceptions import ElementParseError, WrongElement
@@ -5,7 +9,7 @@ from twilix.base.exceptions import ElementParseError, WrongElement
 class EmptyStanza(object):   
     """Dummy stanza to send when nothing to send."""
     # TODO: slots?
-    def __nonzero__(self):
+    def __bool__(self):
         return False
 
 class EmptyElement(object):
@@ -13,7 +17,7 @@ class EmptyElement(object):
     name = None
     uri = None
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
     def __unicode__(self):
         return u''
@@ -58,7 +62,7 @@ class MyElement(Element):
         myel = cls((el.uri, el.name))
         myel.attributes = el.attributes
         for c in el.children:
-            if isinstance(c, (str, unicode)):
+            if isinstance(c, str):
                 myel.children.append(c)
             else:
                 myel.children.append(cls.makeFromElement(c))
@@ -110,9 +114,9 @@ class MyElement(Element):
             raise WrongElement
         if cls.elementName is not None and el.name != cls.elementName:
             raise WrongElement
-        for name, attr in cls.attributesProps.items():
+        for name, attr in list(cls.attributesProps.items()):
             kwargs[name] = attr.to_python(el.attributes.get(attr.xmlattr, None))
-        for name, attr in cls.nodesProps.items():
+        for name, attr in list(cls.nodesProps.items()):
             els = attr.get_from_el(el)
             if not isinstance(els, tuple):
                 kwargs[name] = attr.to_python(els)
@@ -140,9 +144,9 @@ class MyElement(Element):
 
     def validate(self):
         """Validate all attributes."""
-        for name, attr in self.__class__.attributesProps.items():
+        for name, attr in list(self.__class__.attributesProps.items()):
             value = self.__getattr__(name, validate=True)
-        for name, attr in self.__class__.nodesProps.items():
+        for name, attr in list(self.__class__.nodesProps.items()):
             value = self.__getattr__(name, validate=True)
             validate = getattr(value, 'validate', None)
             if validate is not None:
@@ -168,6 +172,11 @@ class MyElement(Element):
         Call __getattr__ method of super class otherwise.  
                
         """
+        if name in ('__getstate__', '__setstate__') and self.children is None:
+            # workaround to make copy.copy work on python3: twilix uses
+            # self.children in `__getattr__` which is not yet initialized
+            # when copying
+            self.children = []
         need_adder = False
         need_remover = False
         if name.startswith('add'):
@@ -200,7 +209,7 @@ class MyElement(Element):
                             self.addChild(content)
                         else:
                             n = MyElement((None, node.xmlnode))
-                            n.addChild(unicode(content))
+                            n.addChild(str(content))
                             self.addChild(n)
                     return r
                 return adder
@@ -285,10 +294,10 @@ class MyElement(Element):
             if value is None and attr.default is not None:
                 value = attr.default
             if value is not None:
-                self.attributes[attr.xmlattr] = unicode(value)
+                self.attributes[attr.xmlattr] = str(value)
         elif node:
             if value is None and node.required and node.default is None:
-                raise ElementParseError, 'required node %s is not specified' % name
+                raise_(ElementParseError, 'required node %s is not specified' % name)
             elif value is None:
                 value = node.default
             self.removeChilds(name=node.xmlnode)
@@ -304,7 +313,7 @@ class MyElement(Element):
                     pass
                 else:
                     n = MyElement((None, node.xmlnode))
-                    n.addChild(unicode(content))
+                    n.addChild(str(content))
                     self.addChild(n)
         else:
             super(MyElement, self).__setattr__(name, value)
@@ -336,7 +345,7 @@ class MyElement(Element):
         """
         r = u''
         for c in self.children:
-            if not isinstance(c, (unicode, str)):
+            if not isinstance(c, str):
                 raise ValueError
             r += c
         return r
@@ -348,7 +357,7 @@ class MyElement(Element):
         Set value as content.        
         """
         self.removeChilds()
-        self.children.append(unicode(value))
+        self.children.append(str(value))
     content = property(_content_get, _content_set)
 
     def addElement(self, name, defaultUri=None, content=None):
@@ -389,7 +398,7 @@ class MyElement(Element):
             uri = getattr(element, 'elementUri', None)
         children = []
         for el in self.children:
-            if not isinstance(el, (str, unicode)) and \
+            if not isinstance(el, str) and \
                not (el.name == name and (uri is None or el.uri == uri)):
                 children.append(el)
         self.children = children

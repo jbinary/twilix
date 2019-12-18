@@ -17,6 +17,10 @@ an exception like any other Python exception::
         sys.stderr.write('example.net does not support version request')
 
 """
+from __future__ import unicode_literals
+from builtins import str
+from builtins import map
+from future.utils import raise_
 import string
 import sys
 
@@ -83,7 +87,10 @@ def condition_to_name(condition):
     :returns: condition in CapWords style.
     """
     words = condition.split('-')
-    words = map(string.capitalize, words)
+    # python 3 has moved string.capitalize
+    capitalize = getattr(str, 'capitalize',
+                         getattr(string, 'capitalize', None))
+    words = list(map(getattr(str, 'capitalize', capitalize), words))
     return ''.join(words)
 
 def exception_by_condition(condition): 
@@ -146,19 +153,22 @@ class ExceptionWithAppCondition(ExceptionWithType):
                                 text=self.reason,
                                 type_=self.type,
                                 app_text=self.app_condition)
-    
+
+
 for condition in conditions:
     """Defining exception for all possible conditions."""
     class DummyException(ExceptionWithContent):
         pass
     name = '%sException' % condition_to_name(condition)
-    DummyException.__name__ = name
+    DummyException.__name__ = bytes(name)
     DummyException.condition = condition
     setattr(module, name, DummyException)
+
 
 class UndefinedConditionException(ExceptionWithAppCondition):
     """Describe undefined condition."""
     condition = 'undefined-condition'
+
 
 class ConditionNode(fields.ElementNode):
     """
@@ -210,7 +220,7 @@ class Error(VElement):
         
         """
         if value not in ('cancel', 'continue', 'modify', 'auth', 'wait'):
-            raise ElementParseError, 'Wrong Error Type %s' % value
+            raise_(ElementParseError, 'Wrong Error Type %s' % value)
         return value
 
 class AppError(Error):

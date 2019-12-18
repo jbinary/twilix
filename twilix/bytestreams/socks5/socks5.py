@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 $Id: socks5.py 31 2007-12-21 00:08:34Z fabio.forno $
 """
+from __future__ import print_function
 
 from twisted.internet import protocol, reactor
 import struct
@@ -241,7 +242,7 @@ class SOCKSv5(protocol.Protocol):
                 # Any other command is not supported
                 self.sendErrorReply(REPLY_CMD_NOT_SUPPORTED)
 
-        except struct.error, why:
+        except struct.error as why:
             return None
 
 
@@ -264,7 +265,7 @@ class SOCKSv5(protocol.Protocol):
         pass
     
     def authenticateUserPass(self, user, passwd):
-        print "User/pass: ", user, passwd
+        print("User/pass: ", user, passwd)
         return True
 
     def dataReceived(self, buf):

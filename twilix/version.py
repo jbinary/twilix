@@ -3,7 +3,9 @@
 You can use this both to get versions of other entities and to
 represent your version to others.
 """
+from __future__ import unicode_literals
 
+from builtins import object
 from twilix.stanzas import Query, MyIq, Iq
 from twilix.disco import Feature
 from twilix import fields, errors

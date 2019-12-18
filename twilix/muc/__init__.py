@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from builtins import object
 from twilix.stanzas import Presence, Iq
 from twilix.base.myelement import MyElement
 from twilix.jid import internJID
