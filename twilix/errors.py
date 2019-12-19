@@ -160,7 +160,7 @@ for condition in conditions:
     class DummyException(ExceptionWithContent):
         pass
     name = '%sException' % condition_to_name(condition)
-    DummyException.__name__ = bytes(name)
+    DummyException.__name__ = name.__str__()
     DummyException.condition = condition
     setattr(module, name, DummyException)
 
