@@ -4,6 +4,7 @@ from twisted.internet import task
 
 from twilix.jid import internJID
 
+
 class BasePattern(object):
     def __init__(self, myjid, keepalive_period=None):
         """
@@ -16,7 +17,7 @@ class BasePattern(object):
         self.keepalive_send_task = task.LoopingCall(self.send_keepalive)
 
     def send_keepalive(self):
-        self.xmlstream.transport.write(' ')
+        self.xmlstream.transport.write(b' ')
 
     def startSendingKeepalives(self):
         if self.keepalive_period:
